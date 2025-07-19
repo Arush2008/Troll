@@ -1,4 +1,5 @@
 // Troll Website JavaScript - All the fun happens here! 🎭
+// Advanced trolling features for maximum confusion!
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all troll features
@@ -12,6 +13,24 @@ document.addEventListener('DOMContentLoaded', function() {
     initSecretMessage();
     initRestartButton();
     initRandomTrolls();
+    
+    // Initialize advanced troll features
+    initFakeAI();
+    initFileExplorer();
+    initFakeTerminal();
+    initGaslightingForm();
+    initSurveillance();
+    initSystemNotifications();
+    initInternetBreaker();
+    initMatrixEffect();
+    initCursorChaos();
+    initPersonalization();
+    initAudioChaos();
+    
+    // Get user's name for personalized trolling
+    setTimeout(() => {
+        getUserName();
+    }, 5000);
 });
 
 // 1. Fake Loading Screen
