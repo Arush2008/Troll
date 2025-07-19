@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to My Website</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;,">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader"></div>
+        <p>Loading amazing content... <span id="loading-percent">0</span>%</p>
+        <p id="loading-status">Initializing awesome features...</p>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="main-content hidden">
+        <header>
+            <h1 id="title">Welcome to the Best Website Ever! 🎉</h1>
+            <p>Click the button below to get started!</p>
+        </header>
+
+        <main>
+            <!-- Moving Button Section -->
+            <section class="troll-section">
+                <h2>Get Your Free Prize!</h2>
+                <button id="moving-button" class="troll-button">Click Me for Free Money! 💰</button>
+                <p id="button-message" class="hidden">Haha! Try again! 😜</p>
+            </section>
+
+            <!-- Fake Error Section -->
+            <section class="troll-section">
+                <h2>Important Update</h2>
+                <button id="update-button" class="normal-button">Download Important Update</button>
+            </section>
+
+            <!-- Disappearing Content -->
+            <section class="troll-section">
+                <h2 id="disappearing-text">This text will disappear in 5 seconds...</h2>
+                <p>Don't blink or you'll miss it!</p>
+            </section>
+
+            <!-- Fake Form -->
+            <section class="troll-section">
+                <h2>Win $1000 - Just Enter Your Details!</h2>
+                <form id="troll-form">
+                    <input type="text" placeholder="Your Name" required>
+                    <input type="email" placeholder="Your Email" required>
+                    <button type="submit" id="form-submit">Submit & Win!</button>
+                </form>
+            </section>
+
+            <!-- Cursor Follower -->
+            <div id="cursor-follower"></div>
+
+            <!-- Hidden Blue Screen -->
+            <div id="blue-screen" class="blue-screen hidden">
+                <div class="blue-screen-content">
+                    <h1>😄 SYSTEM ERROR 😄</h1>
+                    <p>Just kidding! You've been trolled!</p>
+                    <p>Your computer is perfectly fine 😉</p>
+                    <button id="close-blue-screen">Close (and stop panicking!)</button>
+                </div>
+            </div>
+
+            <!-- Fake Alert Modal -->
+            <div id="fake-alert" class="fake-alert hidden">
+                <div class="alert-content">
+                    <h2>⚠️ VIRUS DETECTED! ⚠️</h2>
+                    <p>Just kidding! 😂</p>
+                    <p>Your computer is safe. You've been pranked!</p>
+                    <button id="close-alert">I've Been Trolled!</button>
+                </div>
+            </div>
+
+            <!-- Infinite Loop Button -->
+            <section class="troll-section">
+                <h2>The Button That Never Works</h2>
+                <button id="broken-button" class="broken-btn">Click Me (I Work, I Promise!)</button>
+                <div id="broken-message" class="hidden">
+                    <p>Oops! Button is broken! Try again!</p>
+                    <button id="fix-button">Fix Button</button>
+                </div>
+            </section>
+
+            <!-- Reverse Text -->
+            <section class="troll-section">
+                <h2 id="reverse-heading">Amazing Secret Message</h2>
+                <p id="reverse-text">!kcart eht no era uoY .uoy gnitroll ma I ,olleH</p>
+                <button id="decode-button">Decode Secret Message</button>
+            </section>
+
+            <!-- Footer -->
+            <footer>
+                <p>You've been successfully trolled! 🎭</p>
+                <p>Hope you had fun! This website is harmless and just for laughs.</p>
+                <button id="restart-button">Restart the Trolling!</button>
+            </footer>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
