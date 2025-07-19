@@ -75,6 +75,41 @@
                 </div>
             </div>
 
+            <!-- Surveillance Modal -->
+            <div id="surveillance-modal" class="surveillance-modal hidden">
+                <div class="surveillance-content">
+                    <h2>🕵️‍♂️ SURVEILLANCE DETECTED</h2>
+                    <div class="fake-webcam">
+                        <div class="webcam-feed">📹 RECORDING...</div>
+                        <div class="glitch-overlay"></div>
+                    </div>
+                    <p id="ip-message">Your IP address has been logged: 192.168.0.1</p>
+                    <p id="location-message">Location detected: Mars, Solar System</p>
+                    <button id="close-surveillance">Accept Surveillance</button>
+                </div>
+            </div>
+
+            <!-- System Notifications -->
+            <div id="notification-container" class="notification-container"></div>
+
+            <!-- Internet Breaker -->
+            <div id="internet-breaker" class="internet-breaker hidden">
+                <div class="disconnected-content">
+                    <div class="wifi-icon">📶❌</div>
+                    <h1>Connection Lost</h1>
+                    <p>Your internet has been temporarily disconnected</p>
+                    <p>Just kidding! 😄</p>
+                    <div class="crying-emoji">😭</div>
+                    <button id="restore-internet">Restore Connection</button>
+                </div>
+            </div>
+
+            <!-- Matrix Overlay -->
+            <div id="matrix-overlay" class="matrix-overlay hidden"></div>
+
+            <!-- Multiple Cursors -->
+            <div id="cursor-chaos" class="cursor-chaos hidden"></div>
+
             <!-- Infinite Loop Button -->
             <section class="troll-section">
                 <h2>The Button That Never Works</h2>
@@ -90,6 +125,70 @@
                 <h2 id="reverse-heading">Amazing Secret Message</h2>
                 <p id="reverse-text">!kcart eht no era uoY .uoy gnitroll ma I ,olleH</p>
                 <button id="decode-button">Decode Secret Message</button>
+            </section>
+
+            <!-- Fake AI Chatbox -->
+            <section class="troll-section">
+                <h2>🤖 AI Assistant (Beta)</h2>
+                <div id="chatbox" class="chatbox">
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="ai-message">Hello! I'm your AI assistant. How can I help you today?</div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chat-input" placeholder="Ask me anything..." maxlength="100">
+                        <button id="chat-send">Send</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fake File Explorer -->
+            <section class="troll-section">
+                <h2>📂 Your Files</h2>
+                <div id="file-explorer" class="file-explorer">
+                    <div class="file-item" data-file="passwords.txt">
+                        📄 passwords.txt
+                    </div>
+                    <div class="file-item" data-file="DO_NOT_OPEN.exe">
+                        ⚠️ DO_NOT_OPEN.exe
+                    </div>
+                    <div class="file-item" data-file="homework_folder">
+                        📁 homework_folder
+                    </div>
+                    <div class="file-item" data-file="secret_diary.txt">
+                        📝 secret_diary.txt
+                    </div>
+                    <div class="file-item" data-file="virus_scanner.exe">
+                        🛡️ virus_scanner.exe
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fake Terminal -->
+            <section class="troll-section">
+                <h2>💻 Terminal Access</h2>
+                <div id="terminal" class="terminal">
+                    <div id="terminal-output" class="terminal-output">
+                        <div class="terminal-line">Welcome to TrollOS Terminal v2.0</div>
+                        <div class="terminal-line">Type 'help' for available commands...</div>
+                    </div>
+                    <div class="terminal-input-line">
+                        <span class="terminal-prompt">user@trollsite:~$ </span>
+                        <input type="text" id="terminal-input" class="terminal-input" autocomplete="off">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gaslighting Form -->
+            <section class="troll-section">
+                <h2>Contact Form (Totally Normal)</h2>
+                <form id="gaslight-form" class="gaslight-form">
+                    <input type="text" id="gaslight-name" placeholder="Your Name" class="gaslight-input">
+                    <input type="email" id="gaslight-email" placeholder="Your Email" class="gaslight-input">
+                    <div class="button-container">
+                        <button type="submit" id="yes-btn" class="gaslight-btn">Yes</button>
+                        <button type="button" id="no-btn" class="gaslight-btn">No</button>
+                    </div>
+                </form>
             </section>
 
             <!-- Footer -->

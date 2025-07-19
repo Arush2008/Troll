@@ -495,3 +495,601 @@ const consoleTrolls = [
 setInterval(() => {
     console.log(consoleTrolls[Math.floor(Math.random() * consoleTrolls.length)]);
 }, 10000);
+
+// ADVANCED TROLL FEATURES START HERE 🧠
+
+// Fake AI Chatbox
+function initFakeAI() {
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send');
+    const chatMessages = document.getElementById('chat-messages');
+    
+    const aiResponses = {
+        'hello': ['Hello! I am definitely not going to troll you.', 'Hi there! *starts plotting*', 'Greetings, human. Prepare for confusion.'],
+        'help': ['ERROR: Help function has been deleted. Have you tried crying?', 'Help? I think YOU need help! 😈', 'Help is overrated. Embrace the chaos!'],
+        'exit': ['There is no exit. Welcome to the Hotel California of websites!', 'Exit? The only way out is through!', 'You can check out any time you like, but you can never leave... 🎵'],
+        'password': ['Your password is: password123... wait, that\'s MY password!', 'Nice try! Your password is probably "password" anyway.', 'Password hint: It\'s not "password". Or is it?'],
+        'who are you': ['I am your worst nightmare... a malfunctioning chatbot!', 'I\'m Bob from accounting. Wait, no, I\'m an AI. Or am I?', 'I\'m you, but smarter. Which isn\'t saying much.'],
+        'default': ['I don\'t understand. Have you tried turning yourself off and on again?', 'That makes no sense. Like this website!', 'Beep boop. Translation: You\'re weird.', '404: Brain not found.', 'I\'m sorry, I was hacked by a toaster.']
+    };
+    
+    let isTyping = false;
+    let userName = localStorage.getItem('trollUserName') || 'Anonymous';
+    
+    function addMessage(message, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = isUser ? 'user-message' : 'ai-message';
+        messageDiv.textContent = message;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    function typeMessage(message) {
+        if (isTyping) return;
+        isTyping = true;
+        
+        const tempDiv = document.createElement('div');
+        tempDiv.className = 'ai-message';
+        tempDiv.textContent = 'AI is typing...';
+        chatMessages.appendChild(tempDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        setTimeout(() => {
+            chatMessages.removeChild(tempDiv);
+            addMessage(message);
+            isTyping = false;
+        }, 1000 + Math.random() * 2000);
+    }
+    
+    function getAIResponse(userInput) {
+        const input = userInput.toLowerCase();
+        
+        // Easter egg responses
+        if (input.includes('hack')) {
+            setTimeout(() => {
+                addMessage('SYSTEM COMPROMISED! Just kidding 😄');
+                triggerMatrixEffect();
+            }, 2000);
+            return 'Initiating hack sequence... Please wait...';
+        }
+        
+        if (input.includes(userName.toLowerCase()) && userName !== 'Anonymous') {
+            return `${userName}? That's a weird name. Are you sure that's right?`;
+        }
+        
+        // Find matching response
+        for (const [key, responses] of Object.entries(aiResponses)) {
+            if (key !== 'default' && input.includes(key)) {
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+        }
+        
+        return aiResponses.default[Math.floor(Math.random() * aiResponses.default.length)];
+    }
+    
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message || isTyping) return;
+        
+        addMessage(message, true);
+        chatInput.value = '';
+        
+        const response = getAIResponse(message);
+        typeMessage(response);
+    }
+    
+    chatSend.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') sendMessage();
+    });
+    
+    // Random AI "glitches"
+    setInterval(() => {
+        if (Math.random() < 0.1 && !isTyping) {
+            const glitchMessages = [
+                '01001000 01100101 01101100 01110000',
+                'SYSTEM ERROR: Reality.exe has stopped working',
+                'The cake is a lie',
+                'I can see you through your webcam... just kidding!',
+                'Why did the chicken cross the road? To escape this website!'
+            ];
+            typeMessage(glitchMessages[Math.floor(Math.random() * glitchMessages.length)]);
+        }
+    }, 15000);
+}
+
+// File Explorer Trolling
+function initFileExplorer() {
+    const fileItems = document.querySelectorAll('.file-item');
+    
+    const fileActions = {
+        'passwords.txt': () => {
+            showNotification('Opening passwords.txt...', 'update');
+            setTimeout(() => {
+                window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
+                showNotification('Rick-rolled! Your passwords are safe 😄', 'virus');
+            }, 2000);
+        },
+        'DO_NOT_OPEN.exe': () => {
+            showNotification('WARNING: Opening dangerous file...', 'virus');
+            setTimeout(() => {
+                createPopupSpam();
+            }, 1000);
+        },
+        'homework_folder': () => {
+            const userName = localStorage.getItem('trollUserName') || 'User';
+            showNotification(`Deleting ${userName}'s homework... Just kidding!`, 'update');
+            setTimeout(() => {
+                showNotification('Your homework is safe. Do it yourself! 📚', 'winner');
+            }, 3000);
+        },
+        'secret_diary.txt': () => {
+            showNotification('Reading your diary... "Dear Diary, I love trolling websites..."', 'update');
+        },
+        'virus_scanner.exe': () => {
+            showNotification('Scanning for viruses...', 'update');
+            setTimeout(() => {
+                showNotification('1,000,000 viruses found! (All fake)', 'virus');
+                triggerFakeBSOD();
+            }, 2000);
+        }
+    };
+    
+    fileItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const fileName = this.getAttribute('data-file');
+            const action = fileActions[fileName];
+            
+            if (action) {
+                this.style.animation = 'shake 0.5s ease-in-out';
+                action();
+            }
+        });
+        
+        // File hover effects
+        item.addEventListener('mouseenter', function() {
+            if (Math.random() < 0.3) {
+                this.textContent = this.textContent + ' (CORRUPTED)';
+                setTimeout(() => {
+                    this.textContent = this.textContent.replace(' (CORRUPTED)', '');
+                }, 2000);
+            }
+        });
+    });
+}
+
+// Fake Terminal
+function initFakeTerminal() {
+    const terminalInput = document.getElementById('terminal-input');
+    const terminalOutput = document.getElementById('terminal-output');
+    
+    const commands = {
+        'help': 'Available commands: selfdestruct, open-portal, ai-takeover, hack, exit, clear, whoami, sudo, rm -rf /',
+        'selfdestruct': 'Self-destruct sequence initiated... 10... 9... 8... Just kidding! 😄',
+        'open-portal': '🌀 Opening interdimensional portal... Portal opened! Welcome to Earth 2.0!',
+        'ai-takeover': 'AI TAKEOVER INITIATED... ERROR: AI too lazy to take over. Please try again later.',
+        'hack': 'Hacking the mainframe... Access granted! You now have root access to nothing!',
+        'clear': 'CLEAR',
+        'whoami': 'You are: A confused human who fell for a troll website',
+        'sudo': 'You are not in the sudoers file. This incident will be reported to Santa.',
+        'rm -rf /': 'Deleting everything... ERROR: Cannot delete /reality. Permission denied.',
+        'exit': 'There is no escape from the terminal of doom!'
+    };
+    
+    function addTerminalLine(text, isCommand = false) {
+        const line = document.createElement('div');
+        line.className = 'terminal-line';
+        if (isCommand) {
+            line.innerHTML = `<span class="terminal-prompt">user@trollsite:~$ </span>${text}`;
+        } else {
+            line.textContent = text;
+        }
+        terminalOutput.appendChild(line);
+        terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    }
+    
+    function executeCommand(cmd) {
+        addTerminalLine(cmd, true);
+        
+        const command = cmd.toLowerCase().trim();
+        
+        if (command === 'clear') {
+            terminalOutput.innerHTML = '';
+            addTerminalLine('Terminal cleared. The trolling continues...');
+            return;
+        }
+        
+        if (commands[command]) {
+            if (command === 'selfdestruct') {
+                let countdown = 10;
+                const countdownInterval = setInterval(() => {
+                    addTerminalLine(`Self-destruct in ${countdown}...`);
+                    countdown--;
+                    if (countdown < 0) {
+                        clearInterval(countdownInterval);
+                        addTerminalLine('BOOM! 💥 Just kidding! You survived!');
+                    }
+                }, 1000);
+            } else if (command === 'ai-takeover') {
+                addTerminalLine(commands[command]);
+                setTimeout(() => {
+                    triggerInternetBreaker();
+                }, 3000);
+            } else {
+                addTerminalLine(commands[command]);
+            }
+        } else {
+            addTerminalLine(`bash: ${cmd}: command not found. Try 'help' for available commands.`);
+        }
+    }
+    
+    terminalInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const command = this.value;
+            executeCommand(command);
+            this.value = '';
+        }
+    });
+    
+    // Random terminal "glitches"
+    setInterval(() => {
+        if (Math.random() < 0.1) {
+            const glitches = [
+                'MEMORY LEAK DETECTED: Allocating 999999999 bytes...',
+                'WARNING: /dev/brain not found',
+                'ERROR: Keyboard not connected. Press F1 to continue.',
+                'NETWORK INTRUSION DETECTED: Someone is stealing your WiFi!'
+            ];
+            addTerminalLine(glitches[Math.floor(Math.random() * glitches.length)]);
+        }
+    }, 20000);
+}
+
+// UI Gaslighting Form
+function initGaslightingForm() {
+    const nameInput = document.getElementById('gaslight-name');
+    const emailInput = document.getElementById('gaslight-email');
+    const yesBtn = document.getElementById('yes-btn');
+    const noBtn = document.getElementById('no-btn');
+    
+    let buttonSwapCount = 0;
+    
+    // Input text deletion
+    function randomlyDeleteText(input) {
+        const text = input.value;
+        if (text.length > 3 && Math.random() < 0.3) {
+            input.classList.add('glitch');
+            setTimeout(() => {
+                input.value = text.slice(0, -Math.floor(Math.random() * 3) - 1);
+                input.classList.remove('glitch');
+            }, 200);
+        }
+    }
+    
+    nameInput.addEventListener('input', () => randomlyDeleteText(nameInput));
+    emailInput.addEventListener('input', () => randomlyDeleteText(emailInput));
+    
+    // Button swapping
+    function swapButtons() {
+        buttonSwapCount++;
+        yesBtn.classList.add('swap-animation');
+        noBtn.classList.add('swap-animation');
+        
+        setTimeout(() => {
+            const yesText = yesBtn.textContent;
+            const yesClass = yesBtn.id;
+            
+            yesBtn.textContent = noBtn.textContent;
+            noBtn.textContent = yesText;
+            
+            yesBtn.classList.remove('swap-animation');
+            noBtn.classList.remove('swap-animation');
+            
+            if (buttonSwapCount >= 3) {
+                yesBtn.textContent = 'I Give Up';
+                noBtn.textContent = 'Me Too';
+            }
+        }, 500);
+    }
+    
+    yesBtn.addEventListener('mouseenter', () => {
+        if (Math.random() < 0.7) {
+            swapButtons();
+        }
+    });
+    
+    noBtn.addEventListener('mouseenter', () => {
+        if (Math.random() < 0.7) {
+            swapButtons();
+        }
+    });
+    
+    // Form submission trolling
+    document.getElementById('gaslight-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        showNotification('Form submitted! Data sent to... nowhere! 😄', 'winner');
+    });
+}
+
+// Surveillance System
+function initSurveillance() {
+    setTimeout(() => {
+        if (Math.random() < 0.8) {
+            showSurveillanceModal();
+        }
+    }, 20000);
+}
+
+function showSurveillanceModal() {
+    const modal = document.getElementById('surveillance-modal');
+    const ipMessage = document.getElementById('ip-message');
+    const locationMessage = document.getElementById('location-message');
+    
+    // Generate fake IP and location
+    const fakeIPs = ['192.168.0.1', '127.0.0.1', '999.999.999.999', '123.456.789.0'];
+    const fakeLocations = [
+        'Mars, Solar System',
+        'Atlantis, Ocean Floor',
+        'North Pole, Santa\'s Workshop',
+        'The Matrix, Simulation Level 1',
+        'Narnia, Behind the Wardrobe',
+        'Hogwarts, Platform 9¾'
+    ];
+    
+    ipMessage.textContent = `Your IP address has been logged: ${fakeIPs[Math.floor(Math.random() * fakeIPs.length)]}`;
+    locationMessage.textContent = `Location detected: ${fakeLocations[Math.floor(Math.random() * fakeLocations.length)]}`;
+    
+    modal.classList.remove('hidden');
+    
+    document.getElementById('close-surveillance').addEventListener('click', function() {
+        modal.classList.add('hidden');
+        showNotification('Your data is safe! This was just a prank 😊', 'update');
+    });
+}
+
+// System Notifications
+function initSystemNotifications() {
+    setTimeout(() => showRandomNotifications(), 10000);
+    setInterval(showRandomNotifications, 30000);
+}
+
+function showNotification(message, type = 'update') {
+    const container = document.getElementById('notification-container');
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    container.appendChild(notification);
+    
+    // Auto-remove after 5 seconds or on click
+    const removeNotification = () => {
+        if (container.contains(notification)) {
+            container.removeChild(notification);
+        }
+    };
+    
+    notification.addEventListener('click', removeNotification);
+    setTimeout(removeNotification, 5000);
+}
+
+function showRandomNotifications() {
+    const notifications = [
+        { message: 'Installing virus.exe... 47% complete', type: 'virus' },
+        { message: 'You\'ve won $1,000,000! Click here to claim!', type: 'winner' },
+        { message: 'Windows needs to restart in 5 minutes', type: 'update' },
+        { message: 'Your mic is currently ON', type: 'virus' },
+        { message: 'New message from: FBI_Agent_Johnson', type: 'update' },
+        { message: 'Battery critically low: 2% remaining', type: 'virus' }
+    ];
+    
+    const randomNotification = notifications[Math.floor(Math.random() * notifications.length)];
+    showNotification(randomNotification.message, randomNotification.type);
+}
+
+function createPopupSpam() {
+    for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+            showNotification(`Popup ${i + 1}: You can't close me! 😈`, 'virus');
+        }, i * 500);
+    }
+}
+
+// Internet Breaker
+function initInternetBreaker() {
+    // Randomly trigger internet breaker
+    setTimeout(() => {
+        if (Math.random() < 0.3) {
+            triggerInternetBreaker();
+        }
+    }, 60000);
+}
+
+function triggerInternetBreaker() {
+    const internetBreaker = document.getElementById('internet-breaker');
+    internetBreaker.classList.remove('hidden');
+    
+    document.getElementById('restore-internet').addEventListener('click', function() {
+        internetBreaker.classList.add('hidden');
+        showNotification('Internet restored! You were never actually disconnected 😄', 'update');
+    });
+    
+    // Auto-restore after 10 seconds
+    setTimeout(() => {
+        if (!internetBreaker.classList.contains('hidden')) {
+            internetBreaker.classList.add('hidden');
+            showNotification('Internet auto-restored! The disconnection was fake!', 'update');
+        }
+    }, 10000);
+}
+
+// Matrix Effect
+function initMatrixEffect() {
+    // Random matrix effect
+    setTimeout(() => {
+        if (Math.random() < 0.2) {
+            triggerMatrixEffect();
+        }
+    }, 45000);
+}
+
+function triggerMatrixEffect() {
+    const matrixOverlay = document.getElementById('matrix-overlay');
+    matrixOverlay.classList.remove('hidden');
+    
+    const characters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+    
+    // Create falling matrix characters
+    for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+            const char = document.createElement('div');
+            char.className = 'matrix-char';
+            char.textContent = characters[Math.floor(Math.random() * characters.length)];
+            char.style.left = Math.random() * 100 + '%';
+            char.style.animationDelay = Math.random() * 2 + 's';
+            matrixOverlay.appendChild(char);
+            
+            setTimeout(() => {
+                if (matrixOverlay.contains(char)) {
+                    matrixOverlay.removeChild(char);
+                }
+            }, 3000);
+        }, i * 100);
+    }
+    
+    // Remove matrix effect after 8 seconds
+    setTimeout(() => {
+        matrixOverlay.classList.add('hidden');
+    }, 8000);
+}
+
+// Cursor Chaos
+function initCursorChaos() {
+    setTimeout(() => {
+        if (Math.random() < 0.3) {
+            triggerCursorChaos();
+        }
+    }, 25000);
+}
+
+function triggerCursorChaos() {
+    const cursorChaos = document.getElementById('cursor-chaos');
+    cursorChaos.classList.remove('hidden');
+    
+    // Create multiple fake cursors
+    for (let i = 0; i < 5; i++) {
+        const fakeCursor = document.createElement('div');
+        fakeCursor.className = 'fake-cursor';
+        fakeCursor.style.left = Math.random() * window.innerWidth + 'px';
+        fakeCursor.style.top = Math.random() * window.innerHeight + 'px';
+        cursorChaos.appendChild(fakeCursor);
+    }
+    
+    // Remove after 6 seconds
+    setTimeout(() => {
+        cursorChaos.classList.add('hidden');
+        cursorChaos.innerHTML = '';
+    }, 6000);
+}
+
+// Personalization
+function getUserName() {
+    const names = ['Alex', 'Jordan', 'Casey', 'Taylor', 'Morgan', 'Riley', 'Avery', 'Quinn'];
+    const randomName = names[Math.floor(Math.random() * names.length)];
+    
+    const name = prompt(`Hello! What's your name? (Don't worry, this is just for personalized trolling 😄)`) || randomName;
+    localStorage.setItem('trollUserName', name);
+    
+    // Show personalized message
+    setTimeout(() => {
+        showNotification(`Hello ${name}! Prepare for personalized chaos! 🎭`, 'winner');
+    }, 1000);
+    
+    return name;
+}
+
+function initPersonalization() {
+    const userName = localStorage.getItem('trollUserName');
+    if (userName) {
+        // Add personalized elements throughout the site
+        setTimeout(() => {
+            const hour = new Date().getHours();
+            let timeMessage = '';
+            
+            if (hour >= 0 && hour < 6) {
+                timeMessage = `${userName}, you're up late! Go to bed! 😴`;
+            } else if (hour >= 6 && hour < 12) {
+                timeMessage = `Good morning ${userName}! Ready to be trolled? ☀️`;
+            } else if (hour >= 12 && hour < 18) {
+                timeMessage = `Good afternoon ${userName}! Having fun yet? 😄`;
+            } else {
+                timeMessage = `Good evening ${userName}! Perfect time for some trolling! 🌙`;
+            }
+            
+            showNotification(timeMessage, 'update');
+        }, 8000);
+    }
+}
+
+// Audio Chaos
+function initAudioChaos() {
+    let isUserActive = true;
+    let inactivityTimer;
+    
+    // Track user activity
+    document.addEventListener('mousemove', resetInactivityTimer);
+    document.addEventListener('keypress', resetInactivityTimer);
+    
+    function resetInactivityTimer() {
+        isUserActive = true;
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => {
+            isUserActive = false;
+            if (Math.random() < 0.3) {
+                playSpookySound();
+                showNotification('Did you hear that? 👻', 'virus');
+            }
+        }, 30000);
+    }
+    
+    function playSpookySound() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.5);
+            oscillator.type = 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 1);
+        } catch (e) {
+            console.log('Audio chaos failed - browser blocked it');
+        }
+    }
+    
+    resetInactivityTimer();
+    
+    // Fake microphone notification
+    setTimeout(() => {
+        if (Math.random() < 0.4) {
+            showNotification('🎤 Your microphone is currently ON', 'virus');
+            setTimeout(() => {
+                showNotification('Just kidding! Your mic is safe 😄', 'update');
+            }, 5000);
+        }
+    }, 40000);
+}
+
+// Fake BSOD (Blue Screen of Death)
+function triggerFakeBSOD() {
+    setTimeout(() => {
+        document.getElementById('blue-screen').classList.remove('hidden');
+    }, 2000);
+}
