@@ -177,6 +177,16 @@ function initMovingButton() {
     
     let clickCount = 0;
     let isMoving = false;
+    let mouseX = 0;
+    let mouseY = 0;
+    
+    // Track mouse position for cursor avoidance
+    const container = movingButton.parentElement;
+    container.addEventListener('mousemove', function(e) {
+        const rect = container.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+    });
     
     const messages = [
         "Nice try! 😜",
@@ -204,23 +214,35 @@ function initMovingButton() {
         const maxX = container.offsetWidth - movingButton.offsetWidth - padding;
         const maxY = container.offsetHeight - movingButton.offsetHeight - padding;
         
-        // Ensure minimum movement distance for better effect
-        const minMove = 80;
-        let newX, newY;
+        // Find position furthest from cursor
+        let bestX, bestY;
+        let maxDistance = 0;
         
-        do {
-            newX = Math.random() * Math.max(0, maxX);
-            newY = Math.random() * Math.max(0, maxY);
-        } while (
-            Math.abs(newX - (movingButton.offsetLeft || 0)) < minMove &&
-            Math.abs(newY - (movingButton.offsetTop || 0)) < minMove
-        );
+        // Test multiple positions and pick the one furthest from cursor
+        for (let i = 0; i < 8; i++) {
+            const testX = Math.random() * Math.max(0, maxX);
+            const testY = Math.random() * Math.max(0, maxY);
+            
+            // Calculate distance from cursor to button center at this position
+            const buttonCenterX = testX + movingButton.offsetWidth / 2;
+            const buttonCenterY = testY + movingButton.offsetHeight / 2;
+            const distance = Math.sqrt(
+                Math.pow(buttonCenterX - mouseX, 2) + 
+                Math.pow(buttonCenterY - mouseY, 2)
+            );
+            
+            if (distance > maxDistance) {
+                maxDistance = distance;
+                bestX = testX;
+                bestY = testY;
+            }
+        }
         
         // Apply smooth movement
         movingButton.style.position = 'absolute';
         movingButton.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        movingButton.style.left = newX + 'px';
-        movingButton.style.top = newY + 'px';
+        movingButton.style.left = bestX + 'px';
+        movingButton.style.top = bestY + 'px';
         movingButton.style.transform = 'scale(0.9)';
         
         // Show troll message
@@ -245,7 +267,7 @@ function initMovingButton() {
             isMoving = false;
         }, 300);
         
-        // After 5 attempts, make button clickable
+        // After 5 attempts, make button "clickable" but actually more annoying
         if (clickCount >= 5) {
             setTimeout(() => {
                 playSound('success');
@@ -256,12 +278,195 @@ function initMovingButton() {
                 movingButton.innerHTML = "Fine, you can click me now! 💰";
                 movingButton.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
                 
-                movingButton.onclick = function() {
-                    playSound('coin');
-                    showFakeAlert();
-                };
+                // Remove old event listeners
+                movingButton.removeEventListener('mouseenter', moveButton);
+                
+                // Add evil mode class for special effects
+                movingButton.classList.add('evil-mode');
+                
+                // Add the evil final phase
+                initEvilFinalPhase(movingButton, buttonMessage);
             }, 1000);
         }
+    }
+    
+    // Initialize evil final phase for the "clickable" button
+    function initEvilFinalPhase(button, message) {
+        let finalAttempts = 0;
+        let isEvilMoving = false;
+        let evilMoveTimeout;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+        
+        // Track mouse position for cursor avoidance
+        const container = button.parentElement;
+        let prevMouseX = 0;
+        let prevMouseY = 0;
+        
+        container.addEventListener('mousemove', function(e) {
+            const rect = container.getBoundingClientRect();
+            prevMouseX = lastMouseX;
+            prevMouseY = lastMouseY;
+            lastMouseX = e.clientX - rect.left;
+            lastMouseY = e.clientY - rect.top;
+        });
+        
+        const evilMessages = [
+            "Nope! Still can't catch me! 😈",
+            "So close, yet so far! 🏃‍♂️",
+            "Did you really think it would be that easy? 😏",
+            "I'm faster than you think! ⚡",
+            "Keep dreaming! 🌟",
+            "Almost... but not quite! 🎯",
+            "Nice try, but I'm unstoppable! 🚀"
+        ];
+        
+        function evilMove() {
+            if (isEvilMoving) return;
+            
+            isEvilMoving = true;
+            finalAttempts++;
+            
+            const container = button.parentElement;
+            const padding = 30;
+            const maxX = container.offsetWidth - button.offsetWidth - padding;
+            const maxY = container.offsetHeight - button.offsetHeight - padding;
+            
+            // Calculate position furthest from cursor (and predicted cursor movement)
+            let newX, newY;
+            let maxDistance = 0;
+            
+            // Predict where cursor might be moving
+            const cursorVelX = lastMouseX - prevMouseX;
+            const cursorVelY = lastMouseY - prevMouseY;
+            const predictedMouseX = lastMouseX + cursorVelX * 2; // Predict 2 frames ahead
+            const predictedMouseY = lastMouseY + cursorVelY * 2;
+            
+            // Test multiple positions and pick the one furthest from both current and predicted cursor
+            const testPositions = 12; // Number of positions to test
+            
+            for (let i = 0; i < testPositions; i++) {
+                const testX = Math.random() * Math.max(0, maxX);
+                const testY = Math.random() * Math.max(0, maxY);
+                
+                // Calculate distance from both current and predicted cursor position
+                const buttonCenterX = testX + button.offsetWidth / 2;
+                const buttonCenterY = testY + button.offsetHeight / 2;
+                
+                const currentDistance = Math.sqrt(
+                    Math.pow(buttonCenterX - lastMouseX, 2) + 
+                    Math.pow(buttonCenterY - lastMouseY, 2)
+                );
+                
+                const predictedDistance = Math.sqrt(
+                    Math.pow(buttonCenterX - predictedMouseX, 2) + 
+                    Math.pow(buttonCenterY - predictedMouseY, 2)
+                );
+                
+                // Use minimum of both distances (avoid both current and predicted positions)
+                const minDistance = Math.min(currentDistance, predictedDistance);
+                
+                // Keep the position that's furthest from cursor
+                if (minDistance > maxDistance) {
+                    maxDistance = minDistance;
+                    newX = testX;
+                    newY = testY;
+                }
+            }
+            
+            // Fallback: if no good position found, use corner strategy
+            if (maxDistance < 100) {
+                if (lastMouseX < maxX / 2) {
+                    newX = Math.random() * (maxX / 4) + (maxX * 3/4); // Move to right side
+                } else {
+                    newX = Math.random() * (maxX / 4); // Move to left side
+                }
+                
+                if (lastMouseY < maxY / 2) {
+                    newY = Math.random() * (maxY / 4) + (maxY * 3/4); // Move to bottom
+                } else {
+                    newY = Math.random() * (maxY / 4); // Move to top
+                }
+            }
+            
+            button.style.position = 'absolute';
+            button.style.transition = 'all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+            button.style.left = newX + 'px';
+            button.style.top = newY + 'px';
+            button.style.transform = 'rotate(15deg) scale(0.95)';
+            
+            // Show evil message (less frequently to avoid spam)
+            if (finalAttempts % 3 === 1) {
+                message.textContent = evilMessages[Math.floor(Math.random() * evilMessages.length)];
+                message.classList.remove('hidden');
+                
+                // Very occasionally play a sound (not every time)
+                if (Math.random() < 0.2) {
+                    setTimeout(() => playSound('whoosh'), 100);
+                }
+            }
+            
+            // Reset transform after movement
+            setTimeout(() => {
+                button.style.transform = 'rotate(0deg) scale(1)';
+                isEvilMoving = false;
+            }, 400);
+            
+            // After many attempts, finally give up (or make it even harder!)
+            if (finalAttempts >= 12) { // Reduced from 15 to be slightly less frustrating
+                setTimeout(() => {
+                    button.innerHTML = "OK, you win... maybe 🤔";
+                    button.style.background = 'linear-gradient(45deg, #6c757d, #495057)';
+                    button.classList.remove('evil-mode');
+                    
+                    // Final fake-out: one more move when they think they won
+                    button.onclick = function() {
+                        button.innerHTML = "PSYCH! 😂 You'll never catch me!";
+                        button.style.background = 'linear-gradient(45deg, #dc3545, #c82333)';
+                        button.classList.add('evil-mode');
+                        evilMove();
+                        
+                        // After this final troll, actually make it clickable
+                        setTimeout(() => {
+                            button.innerHTML = "Fine... REALLY clickable now 😤";
+                            button.style.position = 'relative';
+                            button.style.left = '';
+                            button.style.top = '';
+                            button.style.background = 'linear-gradient(45deg, #ffc107, #e0a800)';
+                            button.classList.remove('evil-mode');
+                            button.onclick = function() {
+                                playSound('coin');
+                                showFakeAlert();
+                                message.textContent = "Finally! But the prize was fake anyway! 🎭";
+                            };
+                        }, 2000);
+                    };
+                }, 1000);
+            }
+        }
+        
+        // Move on mouseenter (approach detection)
+        button.addEventListener('mouseenter', evilMove);
+        
+        // Also move when they try to click (click prevention)
+        button.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            evilMove();
+        });
+        
+        // Move on focus (keyboard accessibility trolling)
+        button.addEventListener('focus', evilMove);
+        
+        // Occasional random movement to be extra annoying (but not too much)
+        function randomEvilMove() {
+            if (Math.random() < 0.05 && !isEvilMoving && finalAttempts < 12) { // Reduced frequency
+                evilMove();
+            }
+            evilMoveTimeout = setTimeout(randomEvilMove, Math.random() * 5000 + 4000); // Longer intervals
+        }
+        
+        // Start random movements after a longer delay
+        setTimeout(randomEvilMove, 5000);
     }
     
     // Use mouseenter for better control

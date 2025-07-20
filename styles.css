@@ -175,6 +175,7 @@ header h1 {
     position: relative;
     animation: pulse 2s infinite;
     z-index: 10;
+    user-select: none; /* Prevent text selection during evil phase */
 }
 
 @keyframes pulse {
@@ -183,10 +184,32 @@ header h1 {
     100% { transform: scale(1); }
 }
 
-/* Remove the conflicting runAway animation */
+/* Evil phase glow effect */
 .troll-button:hover {
     transform: scale(1.02);
     box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+/* Smooth evil movement animation */
+@keyframes evilGlow {
+    0% { box-shadow: 0 0 5px rgba(220, 53, 69, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(220, 53, 69, 0.6), 0 0 30px rgba(220, 53, 69, 0.4); }
+    100% { box-shadow: 0 0 5px rgba(220, 53, 69, 0.3); }
+}
+
+/* Apply evil glow when button is in final evil phase */
+.troll-button.evil-mode {
+    animation: evilGlow 1.5s ease-in-out infinite;
+    transform: scale(0.9) !important; /* Slightly smaller to be harder to catch */
+    cursor: crosshair; /* Change cursor to indicate difficulty */
+}
+
+/* Make button message more visible during evil phase */
+#button-message {
+    transition: all 0.3s ease;
+    font-weight: bold;
+    color: #dc3545;
+    margin-top: 15px;
 }
 
 /* Normal Button */
