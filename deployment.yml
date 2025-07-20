@@ -1,0 +1,131 @@
+# TrollOS Deployment Configuration
+# Deploy to gotcha.lol or trollos.net for maximum effect
+
+# Fake Domain Options (for demonstration)
+DOMAINS:
+  primary: "trollos.net"
+  alternatives: 
+    - "gotcha.lol"
+    - "definitelynotavirus.com"
+    - "totallylegitwebsite.org"
+    - "youvebeentrolled.com"
+
+# Server Configuration
+server:
+  type: "nginx"
+  ssl: true
+  compression: true
+  
+  # Fake analytics for trolling
+  analytics:
+    - "google-analytics" # (disabled for privacy)
+    - "troll-tracker-3000" # (custom fake tracker)
+  
+  # Security headers (that don't actually do much)
+  headers:
+    - "X-Troll-Protection: maximum"
+    - "X-Frame-Options: TROLLME"
+    - "Content-Security-Policy: troll-src 'self' *.trollos.net"
+
+# Build Configuration
+build:
+  minify: false # Keep readable for educational purposes
+  bundle: true
+  source_maps: true # For debugging trolling issues
+  
+  # Include all troll modules
+  include:
+    - "js/TrollEngine.js"
+    - "js/TrollFeatures.js"
+    - "js/AdvancedTrollFeatures.js"
+    - "js/CompleteTrollFeatures.js"
+    - "styles.css"
+    - "manifest.json"
+    - "sw.js"
+
+# PWA Configuration
+pwa:
+  enabled: true
+  installable: true
+  offline_mode: true
+  background_sync: true
+  push_notifications: true # (for extra trolling)
+
+# Performance
+performance:
+  lazy_load: true # Load troll features on demand
+  cache_strategy: "cache-first" # Cache everything for offline trolling
+  preload: ["TrollEngine.js"] # Critical troll components
+
+# Development
+development:
+  hot_reload: true
+  debug_mode: true # Shows all troll mechanics
+  console_logs: true # Educational logs
+  source_maps: true
+
+# Production Optimizations
+production:
+  minify_css: true
+  optimize_images: true
+  gzip: true
+  cdn: "trollcdn.net" # Fake CDN
+  
+  # Hide development features
+  debug_mode: false
+  console_logs: false # Hide troll mechanics in production
+
+# Monitoring (Fake)
+monitoring:
+  uptime: "99.9%" # Fake uptime guarantee
+  analytics: "advanced troll tracking"
+  error_tracking: "trollgger.io"
+  performance: "lighthouse score: 💯 (for trolling)"
+
+# SEO (Ironic)
+seo:
+  title: "TrollOS - The Ultimate Trolling Experience"
+  description: "Experience next-generation web-based psychological warfare. Educational purposes only!"
+  keywords: ["troll", "prank", "web", "javascript", "educational", "humor"]
+  
+  # Social media previews (troll-friendly)
+  og:
+    title: "TrollOS - You've Been Invited!"
+    description: "Your friends sent you this totally legitimate website..."
+    image: "/preview-troll.jpg"
+    
+  twitter:
+    card: "summary_large_image" 
+    title: "TrollOS - Advanced Trolling Platform"
+    description: "Click here for a totally normal web experience! 😈"
+
+# Legal (Disclaimer)
+legal:
+  disclaimer: "Educational and entertainment purposes only. No actual harm intended."
+  privacy: "We collect troll statistics for science."
+  terms: "By using this site, you consent to being trolled."
+  
+# Fake Testimonials
+testimonials:
+  - "Best troll website ever! 10/10 would get trolled again!" - Anonymous Victim
+  - "I learned so much about web development trickery!" - Developer
+  - "My friends hate me now. Perfect!" - Satisfied Troll
+
+# Easter Eggs Documentation  
+easter_eggs:
+  konami_code: "Up, Up, Down, Down, Left, Right, Left, Right, B, A"
+  corner_clicks: "Click any corner 7 times"
+  hidden_commands: 
+    - "konami" (in terminal)
+    - "matrix" (in terminal) 
+    - "coffee" (in terminal)
+  dev_mode: "Unlocked by corner clicking"
+  
+# Feature Flags (For A/B Testing Trolls)
+features:
+  advanced_trolling: true
+  sound_system: true
+  dark_mode_trolling: true
+  fake_settings: true
+  surveillance_mode: true
+  game_cheating: true

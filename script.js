@@ -2,6 +2,12 @@
 // Advanced trolling features for maximum confusion!
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize audio context on first user interaction
+    document.addEventListener('click', function initAudio() {
+        initAudioContext();
+        document.removeEventListener('click', initAudio);
+    }, { once: true });
+    
     // Initialize all troll features
     initLoadingScreen();
     initMovingButton();
@@ -27,11 +33,62 @@ document.addEventListener('DOMContentLoaded', function() {
     initPersonalization();
     initAudioChaos();
     
+    // Initialize trolling games
+    initTrollingGames();
+    
+    // Initialize sound effects for all buttons
+    initButtonSounds();
+    
     // Get user's name for personalized trolling
     setTimeout(() => {
         getUserName();
     }, 5000);
 });
+
+// Add sound effects to all interactive elements
+function initButtonSounds() {
+    // Add click sounds to all buttons
+    document.querySelectorAll('button').forEach(button => {
+        // Skip buttons that already have custom sounds
+        if (!button.onclick && !button.classList.contains('catch-target')) {
+            button.addEventListener('click', () => {
+                if (button.classList.contains('troll-button')) {
+                    playSound('boing');
+                } else if (button.classList.contains('normal-button')) {
+                    playSound('click');
+                } else if (button.classList.contains('gaslight-btn')) {
+                    playSound('honk');
+                } else {
+                    playSound('pop');
+                }
+            });
+        }
+    });
+    
+    // Add hover sounds to game cards
+    document.querySelectorAll('.game-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            playSound('coin');
+        });
+    });
+    
+    // Add typing sounds to text inputs
+    document.querySelectorAll('input[type="text"], input[type="email"]').forEach(input => {
+        input.addEventListener('keydown', () => {
+            if (Math.random() < 0.3) { // Not every keystroke
+                playSound('typing');
+            }
+        });
+    });
+    
+    // Add sound to file explorer items
+    document.querySelectorAll('.file-item').forEach(item => {
+        const originalClick = item.onclick;
+        item.addEventListener('mouseenter', () => {
+            playSound('pop');
+        });
+    });
+}
 
 // 1. Fake Loading Screen
 function initLoadingScreen() {
@@ -108,11 +165,18 @@ function showWelcomeMessage() {
     }, 100);
 }
 
-// 2. Moving Button Prank
+// 2. Moving Button Prank - Improved Version
 function initMovingButton() {
     const movingButton = document.getElementById('moving-button');
     const buttonMessage = document.getElementById('button-message');
+    
+    if (!movingButton || !buttonMessage) {
+        console.warn('Moving button elements not found');
+        return;
+    }
+    
     let clickCount = 0;
+    let isMoving = false;
     
     const messages = [
         "Nice try! 😜",
@@ -125,36 +189,88 @@ function initMovingButton() {
         "You're persistent! 💪"
     ];
     
-    movingButton.addEventListener('mouseenter', function() {
-        const container = this.parentElement;
+    function moveButton() {
+        if (isMoving || clickCount >= 5) return;
+        
+        isMoving = true;
+        playSound('whoosh');
+        
+        const container = movingButton.parentElement;
         const containerRect = container.getBoundingClientRect();
+        const buttonRect = movingButton.getBoundingClientRect();
         
-        // Random position within container
-        const maxX = containerRect.width - this.offsetWidth;
-        const maxY = containerRect.height - this.offsetHeight;
+        // Calculate safe movement area (accounting for padding)
+        const padding = 20;
+        const maxX = container.offsetWidth - movingButton.offsetWidth - padding;
+        const maxY = container.offsetHeight - movingButton.offsetHeight - padding;
         
-        const newX = Math.random() * maxX;
-        const newY = Math.random() * maxY;
+        // Ensure minimum movement distance for better effect
+        const minMove = 80;
+        let newX, newY;
         
-        this.style.position = 'absolute';
-        this.style.left = newX + 'px';
-        this.style.top = newY + 'px';
+        do {
+            newX = Math.random() * Math.max(0, maxX);
+            newY = Math.random() * Math.max(0, maxY);
+        } while (
+            Math.abs(newX - (movingButton.offsetLeft || 0)) < minMove &&
+            Math.abs(newY - (movingButton.offsetTop || 0)) < minMove
+        );
+        
+        // Apply smooth movement
+        movingButton.style.position = 'absolute';
+        movingButton.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        movingButton.style.left = newX + 'px';
+        movingButton.style.top = newY + 'px';
+        movingButton.style.transform = 'scale(0.9)';
         
         // Show troll message
         buttonMessage.textContent = messages[clickCount % messages.length];
         buttonMessage.classList.remove('hidden');
         clickCount++;
         
+        // Play different sounds based on attempts
+        setTimeout(() => {
+            if (clickCount <= 2) {
+                playSound('boing');
+            } else if (clickCount <= 4) {
+                playSound('honk');
+            } else {
+                playSound('laugh');
+            }
+        }, 100);
+        
+        // Reset button scale after movement
+        setTimeout(() => {
+            movingButton.style.transform = 'scale(1)';
+            isMoving = false;
+        }, 300);
+        
         // After 5 attempts, make button clickable
         if (clickCount >= 5) {
             setTimeout(() => {
-                movingButton.style.position = 'static';
+                playSound('success');
+                movingButton.style.position = 'relative';
+                movingButton.style.left = '';
+                movingButton.style.top = '';
+                movingButton.style.transform = '';
                 movingButton.innerHTML = "Fine, you can click me now! 💰";
+                movingButton.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+                
                 movingButton.onclick = function() {
+                    playSound('coin');
                     showFakeAlert();
                 };
-            }, 2000);
+            }, 1000);
         }
+    }
+    
+    // Use mouseenter for better control
+    movingButton.addEventListener('mouseenter', moveButton);
+    
+    // Prevent default hover effects when moving
+    movingButton.addEventListener('mouseover', function(e) {
+        if (isMoving || clickCount >= 5) return;
+        e.preventDefault();
     });
 }
 
@@ -162,23 +278,44 @@ function initMovingButton() {
 function initFakeErrors() {
     const updateButton = document.getElementById('update-button');
     
+    if (!updateButton) {
+        console.warn('Update button not found');
+        return;
+    }
+    
     updateButton.addEventListener('click', function() {
+        playSound('alert'); // Alert sound for fake update
+        
         // Show fake blue screen
-        document.getElementById('blue-screen').classList.remove('hidden');
+        const blueScreen = safeGetElement('blue-screen');
+        if (blueScreen) {
+            blueScreen.classList.remove('hidden');
+        }
         
         // Add sound effect (if browser supports it)
-        playErrorSound();
+        setTimeout(() => {
+            playSound('error');
+        }, 1000);
     });
     
     // Close blue screen
-    document.getElementById('close-blue-screen').addEventListener('click', function() {
-        document.getElementById('blue-screen').classList.add('hidden');
+    safeAddEventListener('close-blue-screen', 'click', function() {
+        playSound('success');
+        const blueScreen = safeGetElement('blue-screen');
+        if (blueScreen) {
+            blueScreen.classList.add('hidden');
+        }
     });
 }
 
 // 4. Disappearing Text
 function initDisappearingText() {
     const disappearingText = document.getElementById('disappearing-text');
+    
+    if (!disappearingText) {
+        console.warn('Disappearing text element not found');
+        return;
+    }
     
     let countdown = 5;
     const countdownInterval = setInterval(() => {
@@ -202,11 +339,21 @@ function initDisappearingText() {
 function initTrollForm() {
     const trollForm = document.getElementById('troll-form');
     
+    if (!trollForm) {
+        console.warn('Troll form not found');
+        return;
+    }
+    
     trollForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
         const inputs = this.querySelectorAll('input');
         const submitBtn = document.getElementById('form-submit');
+        
+        if (!submitBtn) {
+            console.warn('Submit button not found');
+            return;
+        }
         
         // Fake processing
         submitBtn.textContent = 'Processing...';
@@ -271,10 +418,16 @@ function initBrokenButton() {
     const brokenMessage = document.getElementById('broken-message');
     const fixButton = document.getElementById('fix-button');
     
+    if (!brokenButton || !fixButton) {
+        console.warn('Broken button elements not found');
+        return;
+    }
+    
     let clickCount = 0;
     
     brokenButton.addEventListener('click', function() {
         clickCount++;
+        playSound('error'); // Error sound for broken button
         this.classList.add('shake');
         
         setTimeout(() => {
@@ -282,12 +435,14 @@ function initBrokenButton() {
         }, 500);
         
         if (clickCount >= 3) {
+            playSound('womp'); // Sad womp womp sound
             brokenMessage.classList.remove('hidden');
             this.style.opacity = '0.5';
         }
     });
     
     fixButton.addEventListener('click', function() {
+        playSound('powerup'); // Power up sound for fix
         brokenButton.textContent = 'Fixed! Now click me!';
         brokenButton.style.opacity = '1';
         brokenButton.style.background = '#27ae60';
@@ -295,9 +450,11 @@ function initBrokenButton() {
         
         // But it breaks again after clicking
         brokenButton.onclick = function() {
+            playSound('zap'); // Zap sound for breaking again
             this.textContent = 'Oops! Broke again! 🔧';
             this.style.background = '#e74c3c';
             setTimeout(() => {
+                playSound('sad'); // Sad trombone
                 brokenMessage.classList.remove('hidden');
                 this.style.opacity = '0.5';
             }, 1000);
@@ -314,6 +471,7 @@ function initSecretMessage() {
     decodeButton.addEventListener('click', function() {
         reverseText.classList.add('reverse-text');
         
+        const originalHandler = this.onclick;
         setTimeout(() => {
             reverseText.textContent = 'Hello, I am trolling you. You are on the track!';
             reverseHeading.textContent = 'Secret Message Revealed! 🕵️';
@@ -323,7 +481,7 @@ function initSecretMessage() {
                 reverseText.textContent = '!kcart eht no era uoY .uoy gnitroll ma I ,olleH';
                 reverseHeading.textContent = 'Amazing Secret Message';
                 this.textContent = 'Decode Secret Message';
-                this.onclick = arguments.callee.outer; // Reset to original function
+                this.onclick = originalHandler; // Reset to original function
             };
         }, 1000);
     });
@@ -377,12 +535,33 @@ function initRandomTrolls() {
     }, 30000);
 }
 
+// Utility function to safely get DOM elements
+function safeGetElement(id) {
+    const element = document.getElementById(id);
+    if (!element) {
+        console.warn(`⚠️ Element with ID '${id}' not found`);
+    }
+    return element;
+}
+
+// Utility function to safely add event listener
+function safeAddEventListener(elementId, event, handler) {
+    const element = safeGetElement(elementId);
+    if (element) {
+        element.addEventListener(event, handler);
+        return true;
+    }
+    return false;
+}
+
 // Helper Functions
 function showFakeAlert() {
     document.getElementById('fake-alert').classList.remove('hidden');
+    playSound('alert');
     
     document.getElementById('close-alert').addEventListener('click', function() {
         document.getElementById('fake-alert').classList.add('hidden');
+        playSound('click');
     });
 }
 
@@ -406,6 +585,547 @@ function playErrorSound() {
         oscillator.stop(audioContext.currentTime + 0.5);
     } catch (e) {
         console.log('Audio not supported');
+    }
+}
+
+// ADVANCED SOUND SYSTEM 🔊
+// Comprehensive sound effects for maximum trolling fun!
+
+let audioContext;
+let soundEnabled = true;
+
+// Initialize audio context (needed for modern browsers)
+function initAudioContext() {
+    try {
+        // Check if AudioContext is available
+        if (window.AudioContext || window.webkitAudioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Handle suspended context (required by newer browsers)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            console.log('🔊 Audio system initialized successfully');
+            return true;
+        } else {
+            console.warn('⚠️ Web Audio API not supported');
+            soundEnabled = false;
+            return false;
+        }
+    } catch (e) {
+        console.warn('⚠️ Audio initialization failed:', e.message);
+        soundEnabled = false;
+        audioContext = null;
+        return false;
+    }
+}
+
+// Main sound playing function
+function playSound(soundType, options = {}) {
+    if (!soundEnabled || !audioContext) return;
+    
+    // Initialize audio context on first user interaction
+    if (!audioContext || audioContext.state === 'closed') {
+        if (!initAudioContext()) return;
+    }
+    
+    try {
+    
+    // Resume context if suspended (browser autoplay policy)
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+    
+    switch(soundType) {
+        case 'click':
+            playClickSound(options);
+            break;
+        case 'error':
+            playErrorBeep(options);
+            break;
+        case 'success':
+            playSuccessChime(options);
+            break;
+        case 'fail':
+            playFailBuzzer(options);
+            break;
+        case 'whoosh':
+            playWhooshSound(options);
+            break;
+        case 'alert':
+            playAlertSound(options);
+            break;
+        case 'glitch':
+            playGlitchSound(options);
+            break;
+        case 'typing':
+            playTypingSound(options);
+            break;
+        case 'countdown':
+            playCountdownBeep(options);
+            break;
+        case 'explosion':
+            playExplosionSound(options);
+            break;
+        case 'laugh':
+            playLaughSound(options);
+            break;
+        case 'sad':
+            playSadSound(options);
+            break;
+        case 'coin':
+            playCoinSound(options);
+            break;
+        case 'powerup':
+            playPowerUpSound(options);
+            break;
+        case 'womp':
+            playWompSound(options);
+            break;
+        case 'boing':
+            playBoingSound(options);
+            break;
+        case 'zap':
+            playZapSound(options);
+            break;
+        case 'honk':
+            playHonkSound(options);
+            break;
+        case 'pop':
+            playPopSound(options);
+            break;
+        case 'laser':
+            playLaserSound(options);
+            break;
+        default:
+            playClickSound(options);
+    }
+    } catch (e) {
+        console.warn('⚠️ Sound playback failed:', e.message);
+    }
+}
+
+// Individual sound functions
+function playClickSound(options = {}) {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+}
+
+function playErrorBeep(options = {}) {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 200;
+    oscillator.type = 'square';
+    
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime + 0.2);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
+}
+
+function playSuccessChime(options = {}) {
+    // Play a happy ascending sequence
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+    
+    notes.forEach((freq, index) => {
+        setTimeout(() => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = freq;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }, index * 100);
+    });
+}
+
+function playFailBuzzer(options = {}) {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
+    oscillator.frequency.linearRampToValueAtTime(100, audioContext.currentTime + 0.8);
+    oscillator.type = 'sawtooth';
+    
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.8);
+}
+
+function playWhooshSound(options = {}) {
+    // Create a whoosh/wind sound effect
+    const bufferSize = audioContext.sampleRate * 0.5; // 0.5 seconds
+    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    const data = buffer.getChannelData(0);
+    
+    // Generate pink noise for whoosh effect
+    for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.pow(i / bufferSize, 2);
+    }
+    
+    const source = audioContext.createBufferSource();
+    const gainNode = audioContext.createGain();
+    const filter = audioContext.createBiquadFilter();
+    
+    source.buffer = buffer;
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(200, audioContext.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(1000, audioContext.currentTime + 0.3);
+    
+    source.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    
+    source.start(audioContext.currentTime);
+}
+
+function playAlertSound(options = {}) {
+    // Classic alert sound - alternating tones
+    [600, 800, 600, 800].forEach((freq, index) => {
+        setTimeout(() => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = freq;
+            oscillator.type = 'square';
+            
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }, index * 200);
+    });
+}
+
+function playGlitchSound(options = {}) {
+    // Create glitchy digital sound
+    for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 100 + Math.random() * 1000;
+            oscillator.type = Math.random() > 0.5 ? 'square' : 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }, i * 50 + Math.random() * 100);
+    }
+}
+
+function playTypingSound(options = {}) {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 300 + Math.random() * 200;
+    oscillator.type = 'square';
+    
+    gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.05);
+}
+
+function playCountdownBeep(options = {}) {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = options.final ? 1000 : 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+}
+
+function playExplosionSound(options = {}) {
+    // Create explosion sound with noise and low frequency
+    const bufferSize = audioContext.sampleRate * 0.8;
+    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    const data = buffer.getChannelData(0);
+    
+    // Generate noise that fades out
+    for (let i = 0; i < bufferSize; i++) {
+        const fade = 1 - (i / bufferSize);
+        data[i] = (Math.random() * 2 - 1) * fade * fade;
+    }
+    
+    const source = audioContext.createBufferSource();
+    const gainNode = audioContext.createGain();
+    const filter = audioContext.createBiquadFilter();
+    
+    source.buffer = buffer;
+    filter.type = 'lowpass';
+    filter.frequency.value = 200;
+    
+    source.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+    
+    source.start(audioContext.currentTime);
+}
+
+function playLaughSound(options = {}) {
+    // Simulate laugh with descending notes
+    const laughNotes = [400, 350, 300, 250, 300, 280, 260];
+    
+    laughNotes.forEach((freq, index) => {
+        setTimeout(() => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = freq;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.15);
+        }, index * 100);
+    });
+}
+
+function playSadSound(options = {}) {
+    // Sad trombone effect
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(250, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 1);
+    oscillator.type = 'sawtooth';
+    
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 1);
+}
+
+function playCoinSound(options = {}) {
+    // Classic coin/pickup sound
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.2);
+}
+
+function playPowerUpSound(options = {}) {
+    // Ascending power-up sound
+    const notes = [200, 300, 400, 600, 800];
+    
+    notes.forEach((freq, index) => {
+        setTimeout(() => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = freq;
+            oscillator.type = 'square';
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }, index * 80);
+    });
+}
+
+function playWompSound(options = {}) {
+    // Sad womp womp sound
+    [150, 120, 150, 120].forEach((freq, index) => {
+        setTimeout(() => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = freq;
+            oscillator.type = 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }, index * 300);
+    });
+}
+
+function playBoingSound(options = {}) {
+    // Cartoon boing sound
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(100, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 0.1);
+    oscillator.frequency.exponentialRampToValueAtTime(50, audioContext.currentTime + 0.4);
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.4);
+}
+
+function playZapSound(options = {}) {
+    // Electric zap sound
+    playGlitchSound(); // Reuse glitch for zap effect
+}
+
+function playHonkSound(options = {}) {
+    // Air horn style honk
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 110; // Low honk
+    oscillator.type = 'sawtooth';
+    
+    gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.6);
+}
+
+function playPopSound(options = {}) {
+    // Quick pop sound
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+}
+
+function playLaserSound(options = {}) {
+    // Sci-fi laser sound
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.3);
+    oscillator.type = 'sawtooth';
+    
+    gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+}
+
+// Sound toggle function
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    const soundBtn = document.getElementById('sound-toggle');
+    if (soundBtn) {
+        soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+        soundBtn.title = soundEnabled ? 'Disable Sound' : 'Enable Sound';
+    }
+    
+    if (soundEnabled) {
+        playSound('powerup');
+        showNotification('Sound effects enabled! 🔊', 'update');
+    } else {
+        showNotification('Sound effects disabled 🔇', 'update');
     }
 }
 
@@ -522,6 +1242,13 @@ function initFakeAI() {
         messageDiv.textContent = message;
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Play sound based on message type
+        if (isUser) {
+            playSound('typing');
+        } else {
+            playSound('pop');
+        }
     }
     
     function typeMessage(message) {
@@ -549,6 +1276,7 @@ function initFakeAI() {
             setTimeout(() => {
                 addMessage('SYSTEM COMPROMISED! Just kidding 😄');
                 triggerMatrixEffect();
+                playSound('laugh');
             }, 2000);
             return 'Initiating hack sequence... Please wait...';
         }
@@ -692,6 +1420,23 @@ function initFakeTerminal() {
         addTerminalLine(cmd, true);
         
         const command = cmd.toLowerCase().trim();
+        
+        // Play appropriate sound for different commands
+        if (command === 'selfdestruct') {
+            playSound('alert');
+        } else if (command === 'hack' || command === 'ai-takeover') {
+            playSound('glitch');
+        } else if (command === 'open-portal') {
+            playSound('whoosh');
+        } else if (command === 'rm -rf /') {
+            playSound('zap');
+        } else if (command === 'clear') {
+            playSound('pop');
+        } else if (commands[command]) {
+            playSound('typing');
+        } else {
+            playSound('error');
+        }
         
         if (command === 'clear') {
             terminalOutput.innerHTML = '';
@@ -859,11 +1604,27 @@ function showNotification(message, type = 'update') {
     notification.className = `notification ${type}`;
     notification.textContent = message;
     
+    // Play sound based on notification type
+    switch(type) {
+        case 'virus':
+            playSound('alert');
+            break;
+        case 'winner':
+            playSound('success');
+            break;
+        case 'update':
+            playSound('pop');
+            break;
+        default:
+            playSound('click');
+    }
+    
     container.appendChild(notification);
     
     // Auto-remove after 5 seconds or on click
     const removeNotification = () => {
         if (container.contains(notification)) {
+            playSound('whoosh'); // Whoosh when closing
             container.removeChild(notification);
         }
     };
@@ -1093,3 +1854,610 @@ function triggerFakeBSOD() {
         document.getElementById('blue-screen').classList.remove('hidden');
     }, 2000);
 }
+
+// TROLLING GAMES 🎮
+// These games are designed to be nearly impossible to win!
+
+function initTrollingGames() {
+    const gameModal = document.getElementById('game-modal');
+    const closeGameBtn = document.getElementById('close-game');
+    
+    closeGameBtn.addEventListener('click', () => {
+        gameModal.classList.add('hidden');
+        // Hide all game screens
+        document.querySelectorAll('.game-screen').forEach(screen => {
+            screen.classList.add('hidden');
+        });
+    });
+    
+    // Initialize individual games
+    initCatchButtonGame();
+    initMemoryGame();
+    initTypingTest();
+    initReactionTimeGame();
+}
+
+function showGame(gameType) {
+    const gameModal = document.getElementById('game-modal');
+    playSound('pop'); // Pop sound when opening game
+    gameModal.classList.remove('hidden');
+    
+    // Hide all game screens first
+    document.querySelectorAll('.game-screen').forEach(screen => {
+        screen.classList.add('hidden');
+    });
+    
+    // Show selected game
+    switch(gameType) {
+        case 'catch-button':
+            document.getElementById('catch-button-game').classList.remove('hidden');
+            playSound('powerup'); // Game start sound
+            resetCatchButtonGame();
+            break;
+        case 'memory-game':
+            document.getElementById('memory-game-screen').classList.remove('hidden');
+            playSound('powerup');
+            resetMemoryGame();
+            break;
+        case 'typing-test':
+            document.getElementById('typing-test-screen').classList.remove('hidden');
+            playSound('powerup');
+            resetTypingTest();
+            break;
+        case 'reaction-time':
+            document.getElementById('reaction-time-screen').classList.remove('hidden');
+            playSound('powerup');
+            resetReactionTimeGame();
+            break;
+    }
+}
+
+// 1. CATCH THE BUTTON GAME 🎯
+// The button gets faster and more evasive as you progress!
+function initCatchButtonGame() {
+    const catchTarget = document.getElementById('catch-target');
+    const catchScore = document.getElementById('catch-score');
+    const catchMessage = document.getElementById('catch-message');
+    
+    let score = 0;
+    let clickCount = 0;
+    let gameActive = true;
+    
+    catchTarget.addEventListener('click', function(e) {
+        if (!gameActive) return;
+        
+        clickCount++;
+        score++;
+        catchScore.textContent = score;
+        
+        // Play success sound with pitch getting higher
+        playSound('coin');
+        
+        // Increase difficulty and trolling with each click
+        if (score >= 3) {
+            // Button becomes smaller
+            this.style.transform = `scale(${Math.max(0.5, 1 - (score * 0.1))})`;
+            playSound('powerup'); // Power-up sound for difficulty increase
+        }
+        
+        if (score >= 5) {
+            // Button moves faster
+            this.style.animationDuration = `${Math.max(0.5, 2 - (score * 0.2))}s`;
+            playSound('alert'); // Alert sound for speed increase
+        }
+        
+        if (score >= 7) {
+            // Button becomes partially transparent
+            this.style.opacity = Math.max(0.3, 1 - ((score - 7) * 0.2));
+            playSound('glitch'); // Glitch sound for transparency
+        }
+        
+        if (score >= 9) {
+            // Almost impossible to click - button moves away on hover
+            this.addEventListener('mouseenter', function() {
+                playSound('whoosh'); // Whoosh when escaping
+                this.style.animation = 'none';
+                this.style.transform = `translate(${Math.random() * 400}px, ${Math.random() * 200}px) scale(0.3)`;
+                setTimeout(() => {
+                    this.style.animation = 'catchButtonMove 0.5s ease-in-out infinite';
+                }, 200);
+            });
+        }
+        
+        // Troll messages based on progress
+        const trollMessages = [
+            "Good start! 🎯",
+            "Getting warmer... 🔥",
+            "Hmm, getting harder? 😏",
+            "Button is getting nervous! 😰",
+            "You're making it angry! 😡",
+            "It's running away from you! 🏃‍♂️",
+            "Almost impossible now! 💀",
+            "The button is practically invisible! 👻",
+            "One more... if you can catch it! 🎭",
+            "VICTORY! ...or is it? 🤔"
+        ];
+        
+        catchMessage.textContent = trollMessages[score] || "Keep trying!";
+        
+        // Check for "victory"
+        if (score >= 10) {
+            gameActive = false;
+            playSound('success'); // Victory sound
+            setTimeout(() => {
+                // Fake victory that gets trolled
+                playSound('womp'); // But then womp womp
+                catchMessage.textContent = "YOU WIN! 🎉 ...Just kidding! The game never ends! 😈";
+                showNotification("Congratulations! You've been trolled by the button game! 🎯", 'winner');
+                
+                // Reset the game after 3 seconds
+                setTimeout(() => {
+                    playSound('laser'); // Reset sound
+                    resetCatchButtonGame();
+                }, 3000);
+            }, 1000);
+        }
+    });
+}
+
+function resetCatchButtonGame() {
+    const catchTarget = document.getElementById('catch-target');
+    const catchScore = document.getElementById('catch-score');
+    const catchMessage = document.getElementById('catch-message');
+    
+    catchScore.textContent = '0';
+    catchMessage.textContent = 'Click the button 10 times to win!';
+    catchTarget.style.transform = 'scale(1)';
+    catchTarget.style.opacity = '1';
+    catchTarget.style.animationDuration = '2s';
+    
+    // Remove previous event listeners to avoid stacking
+    catchTarget.replaceWith(catchTarget.cloneNode(true));
+    initCatchButtonGame();
+}
+
+// 2. MEMORY GAME 🧠
+// The sequence changes when you're about to win!
+function initMemoryGame() {
+    let sequence = [];
+    let playerSequence = [];
+    let level = 1;
+    let showingSequence = false;
+    let gameActive = false;
+}
+
+function resetMemoryGame() {
+    const memoryLevel = document.getElementById('memory-level');
+    const memoryMessage = document.getElementById('memory-message');
+    const memoryGrid = document.getElementById('memory-grid');
+    
+    // Create 3x3 grid
+    memoryGrid.innerHTML = '';
+    for (let i = 0; i < 9; i++) {
+        const tile = document.createElement('div');
+        tile.className = 'memory-tile';
+        tile.dataset.index = i;
+        memoryGrid.appendChild(tile);
+    }
+    
+    memoryLevel.textContent = '1';
+    memoryMessage.textContent = 'Watch the sequence and repeat it!';
+    
+    startMemoryGame();
+}
+
+function startMemoryGame() {
+    let sequence = [];
+    let playerSequence = [];
+    let level = 1;
+    let showingSequence = false;
+    let gameActive = true;
+    
+    function addToSequence() {
+        // Add random tile to sequence
+        sequence.push(Math.floor(Math.random() * 9));
+        showSequence();
+    }
+    
+    function showSequence() {
+        showingSequence = true;
+        document.getElementById('memory-message').textContent = 'Watch carefully...';
+        
+        let index = 0;
+        const interval = setInterval(() => {
+            if (index < sequence.length) {
+                const tile = document.querySelector(`[data-index="${sequence[index]}"]`);
+                tile.classList.add('active');
+                playSound('boing'); // Boing sound for each tile in sequence
+                
+                setTimeout(() => {
+                    tile.classList.remove('active');
+                }, 500);
+                
+                index++;
+            } else {
+                clearInterval(interval);
+                showingSequence = false;
+                document.getElementById('memory-message').textContent = 'Now repeat the sequence!';
+                playSound('pop'); // Pop sound when sequence is done
+                setupClickListeners();
+            }
+        }, 800);
+    }
+    
+    function setupClickListeners() {
+        const tiles = document.querySelectorAll('.memory-tile');
+        tiles.forEach(tile => {
+            tile.onclick = function() {
+                if (showingSequence || !gameActive) return;
+                
+                const clickedIndex = parseInt(this.dataset.index);
+                playerSequence.push(clickedIndex);
+                
+                this.classList.add('active');
+                playSound('click'); // Click sound for player input
+                setTimeout(() => {
+                    this.classList.remove('active');
+                }, 200);
+                
+                // Check if player is correct so far
+                const currentStep = playerSequence.length - 1;
+                
+                // TROLL MECHANIC: Change the sequence when player is about to win!
+                if (level >= 3 && playerSequence.length === sequence.length - 1) {
+                    // Secretly change the last element
+                    sequence[sequence.length - 1] = (sequence[sequence.length - 1] + 1) % 9;
+                }
+                
+                if (playerSequence[currentStep] !== sequence[currentStep]) {
+                    // Wrong!
+                    this.classList.add('wrong');
+                    playSound('fail'); // Fail sound for wrong answer
+                    setTimeout(() => {
+                        this.classList.remove('wrong');
+                    }, 500);
+                    
+                    const trollMessages = [
+                        "Oops! Try again! 🤔",
+                        "Memory failing you? 😏",
+                        "The sequence definitely didn't change... 😇",
+                        "Are you sure you watched carefully? 🤨",
+                        "Maybe your screen glitched? 😈"
+                    ];
+                    
+                    document.getElementById('memory-message').textContent = 
+                        trollMessages[Math.floor(Math.random() * trollMessages.length)];
+                    
+                    // Reset after 2 seconds
+                    setTimeout(() => {
+                        playerSequence = [];
+                        showSequence();
+                    }, 2000);
+                } else if (playerSequence.length === sequence.length) {
+                    // Completed this level
+                    level++;
+                    document.getElementById('memory-level').textContent = level;
+                    
+                    if (level >= 6) {
+                        // "Victory" troll
+                        gameActive = false;
+                        document.getElementById('memory-message').textContent = 
+                            "You win! ...Actually, the game is infinite! 🤯";
+                        showNotification("Memory game trolled you! The sequence keeps changing! 🧠", 'winner');
+                        return;
+                    }
+                    
+                    this.classList.add('correct');
+                    playSound('success'); // Success sound for correct level
+                    setTimeout(() => {
+                        this.classList.remove('correct');
+                    }, 500);
+                    
+                    document.getElementById('memory-message').textContent = 
+                        `Level ${level}! Get ready for a longer sequence...`;
+                    
+                    playerSequence = [];
+                    setTimeout(() => {
+                        addToSequence();
+                    }, 1500);
+                }
+            };
+        });
+    }
+    
+    // Start the game
+    addToSequence();
+}
+
+// 3. TYPING TEST ⌨️
+// Words change while you're typing them!
+function initTypingTest() {
+    const words = [
+        'hello', 'world', 'javascript', 'troll', 'website',
+        'computer', 'keyboard', 'mouse', 'screen', 'internet',
+        'programming', 'code', 'function', 'variable', 'array'
+    ];
+    
+    let currentWord = '';
+    let score = 0;
+    let wordChangeCount = 0;
+}
+
+function resetTypingTest() {
+    const typingScore = document.getElementById('typing-score');
+    const typingInput = document.getElementById('typing-input');
+    const typingTarget = document.getElementById('typing-target-word');
+    const typingMessage = document.getElementById('typing-message');
+    
+    typingScore.textContent = '0';
+    typingInput.value = '';
+    typingMessage.textContent = 'Type 5 words correctly to win!';
+    
+    startTypingTest();
+}
+
+function startTypingTest() {
+    const words = [
+        'hello', 'world', 'javascript', 'troll', 'website',
+        'computer', 'keyboard', 'mouse', 'screen', 'internet',
+        'programming', 'code', 'function', 'variable', 'array'
+    ];
+    
+    let currentWord = words[Math.floor(Math.random() * words.length)];
+    let score = 0;
+    let wordChangeCount = 0;
+    let gameActive = true;
+    
+    const typingScore = document.getElementById('typing-score');
+    const typingInput = document.getElementById('typing-input');
+    const typingTarget = document.getElementById('typing-target-word');
+    const typingMessage = document.getElementById('typing-message');
+    
+    function setNewWord() {
+        currentWord = words[Math.floor(Math.random() * words.length)];
+        typingTarget.textContent = currentWord;
+        typingInput.value = '';
+        typingInput.focus();
+        playSound('pop'); // Sound when new word appears
+    }
+    
+    setNewWord();
+    
+    typingInput.addEventListener('input', function() {
+        if (!gameActive) return;
+        
+        const typed = this.value.toLowerCase().trim();
+        
+        // TROLL MECHANIC 1: Change word when user is close to completing it
+        if (typed.length >= currentWord.length - 2 && wordChangeCount < 3) {
+            wordChangeCount++;
+            setTimeout(() => {
+                if (typed === this.value.toLowerCase().trim()) {
+                    currentWord = words[Math.floor(Math.random() * words.length)];
+                    typingTarget.textContent = currentWord;
+                    typingMessage.textContent = "Oops! Word changed! 😈";
+                    playSound('glitch'); // Glitch sound when word changes
+                }
+            }, 100);
+        }
+        
+        // TROLL MECHANIC 2: Delete characters randomly
+        if (typed.length > 3 && Math.random() < 0.2) {
+            setTimeout(() => {
+                this.value = this.value.slice(0, -1);
+                this.classList.add('shake');
+                playSound('zap'); // Zap sound when deleting characters
+                setTimeout(() => {
+                    this.classList.remove('shake');
+                }, 500);
+            }, 50);
+        }
+        
+        // Check if word is complete
+        if (typed === currentWord.toLowerCase()) {
+            score++;
+            typingScore.textContent = score;
+            playSound('success'); // Success sound for completing word
+            
+            if (score >= 5) {
+                gameActive = false;
+                typingMessage.textContent = "You win! ...Wait, did the words keep changing? 🤔";
+                playSound('powerup'); // Victory sound
+                showNotification("Typing test trolled you! Words kept changing while you typed! ⌨️", 'winner');
+                return;
+            }
+            
+            const encouragements = [
+                "Great! Next word coming up! 🎯",
+                "Nice typing! But can you handle the next one? 😏",
+                "Good job! This next word won't change... maybe 😈",
+                "Excellent! The game is definitely not cheating! 😇",
+                "Perfect! One more and you win... if you can! 🎭"
+            ];
+            
+            typingMessage.textContent = encouragements[score - 1];
+            wordChangeCount = 0; // Reset for next word
+            
+            setTimeout(() => {
+                setNewWord();
+            }, 1000);
+        }
+    });
+    
+    typingInput.addEventListener('keypress', function(e) {
+        // TROLL MECHANIC 3: Random key doesn't register
+        if (Math.random() < 0.1) {
+            e.preventDefault();
+            this.classList.add('shake');
+            setTimeout(() => {
+                this.classList.remove('shake');
+            }, 300);
+        }
+    });
+}
+
+// 4. REACTION TIME GAME ⚡
+// The timing is rigged against the player!
+function initReactionTimeGame() {
+    let gameState = 'waiting'; // waiting, ready, go, finished
+    let startTime = 0;
+    let bestTime = localStorage.getItem('bestReactionTime') || null;
+    let attempts = 0;
+}
+
+function resetReactionTimeGame() {
+    const reactionCircle = document.getElementById('reaction-circle');
+    const reactionMessage = document.getElementById('reaction-message');
+    const bestTimeDisplay = document.getElementById('best-time');
+    
+    reactionCircle.className = 'reaction-circle wait';
+    reactionCircle.textContent = 'Wait for GREEN...';
+    reactionMessage.textContent = 'Click when the circle turns GREEN!';
+    
+    const savedBest = localStorage.getItem('bestReactionTime');
+    bestTimeDisplay.textContent = savedBest ? savedBest + 'ms' : '---';
+    
+    startReactionTimeGame();
+}
+
+function startReactionTimeGame() {
+    let gameState = 'waiting';
+    let startTime = 0;
+    let bestTime = localStorage.getItem('bestReactionTime') || null;
+    let attempts = 0;
+    
+    const reactionCircle = document.getElementById('reaction-circle');
+    const reactionMessage = document.getElementById('reaction-message');
+    const bestTimeDisplay = document.getElementById('best-time');
+    
+    function startRound() {
+        gameState = 'waiting';
+        reactionCircle.className = 'reaction-circle wait';
+        reactionCircle.textContent = 'Wait for GREEN...';
+        
+        // Random wait time between 2-6 seconds
+        const waitTime = 2000 + Math.random() * 4000;
+        
+        // TROLL MECHANIC: Sometimes make wait time extremely long
+        const actualWaitTime = attempts > 3 && Math.random() < 0.3 ? 
+            waitTime + 5000 + Math.random() * 10000 : waitTime;
+        
+        setTimeout(() => {
+            if (gameState === 'waiting') {
+                gameState = 'ready';
+                reactionCircle.className = 'reaction-circle ready';
+                reactionCircle.textContent = 'GET READY...';
+                playSound('countdown'); // Countdown sound for get ready phase
+                
+                // Random ready time
+                setTimeout(() => {
+                    if (gameState === 'ready') {
+                        gameState = 'go';
+                        reactionCircle.className = 'reaction-circle go';
+                        reactionCircle.textContent = 'CLICK NOW!';
+                        startTime = Date.now();
+                        playSound('powerup'); // Power-up sound when turning green
+                        
+                        // TROLL MECHANIC: Sometimes change back to red immediately
+                        if (attempts > 2 && Math.random() < 0.4) {
+                            setTimeout(() => {
+                                if (gameState === 'go') {
+                                    gameState = 'finished';
+                                    reactionCircle.className = 'reaction-circle wait';
+                                    reactionCircle.textContent = 'Too Slow!';
+                                    reactionMessage.textContent = 'The game is faster than you! Try again! 😈';
+                                    
+                                    setTimeout(() => {
+                                        startRound();
+                                    }, 2000);
+                                }
+                            }, 50 + Math.random() * 100); // Very short window
+                        }
+                    }
+                }, 500 + Math.random() * 1500);
+            }
+        }, actualWaitTime);
+    }
+    
+    reactionCircle.onclick = function() {
+        attempts++;
+        
+        if (gameState === 'waiting' || gameState === 'ready') {
+            // Too early!
+            gameState = 'finished';
+            this.className = 'reaction-circle too-early';
+            this.textContent = 'TOO EARLY!';
+            reactionMessage.textContent = 'Wait for GREEN! Starting over...';
+            playSound('fail'); // Fail sound for clicking too early
+            
+            setTimeout(() => {
+                startRound();
+            }, 2000);
+            
+        } else if (gameState === 'go') {
+            // Calculate reaction time
+            const reactionTime = Date.now() - startTime;
+            gameState = 'finished';
+            
+            // TROLL MECHANIC: Add random delay to make user look slower
+            const trollDelay = attempts > 1 ? Math.random() * 100 : 0;
+            const displayTime = Math.floor(reactionTime + trollDelay);
+            
+            this.className = 'reaction-circle wait';
+            this.textContent = `${displayTime}ms`;
+            
+            // Play sound based on reaction time
+            if (displayTime < 200) {
+                playSound('success');
+            } else if (displayTime < 300) {
+                playSound('coin');
+            } else if (displayTime < 500) {
+                playSound('pop');
+            } else {
+                playSound('womp');
+            }
+            
+            // Troll messages based on time
+            let message = '';
+            if (displayTime < 200) {
+                message = "Suspiciously fast... 🤔 (The game added delay)";
+            } else if (displayTime < 300) {
+                message = "Good! But the game made you look slower! 😏";
+            } else if (displayTime < 500) {
+                message = "Not bad! (Plus some added troll delay) 😈";
+            } else {
+                message = "Slow! And we added extra delay for fun! 🐌";
+            }
+            
+            reactionMessage.textContent = message;
+            
+            // Update "best" time (but not really)
+            if (!bestTime || displayTime < bestTime) {
+                bestTime = displayTime;
+                localStorage.setItem('bestReactionTime', bestTime);
+                bestTimeDisplay.textContent = bestTime + 'ms';
+                
+                if (attempts > 5) {
+                    showNotification("New best time! (With hidden troll delays added) ⚡", 'winner');
+                }
+            }
+            
+            // Start next round
+            setTimeout(() => {
+                if (attempts >= 5) {
+                    reactionMessage.textContent = 
+                        "Game over! Your times included random delays for trolling! 😂";
+                    showNotification("Reaction game trolled you with hidden delays! ⚡", 'winner');
+                } else {
+                    startRound();
+                }
+            }, 3000);
+        }
+    };
+    
+    // Start first round
+    startRound();
+}
+
+// Make showGame function global
+window.showGame = showGame;

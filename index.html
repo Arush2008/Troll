@@ -3,9 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to My Website</title>
+    <title>TrollOS - Advanced Psychological Warfare Platform</title>
+    
+    <!-- SEO and Social Media Meta Tags -->
+    <meta name="description" content="Experience next-generation web-based psychological warfare. Educational purposes only! The ultimate trolling experience.">
+    <meta name="keywords" content="troll, prank, web, javascript, educational, humor, trolling, gotcha">
+    <meta name="author" content="The Troll Collective">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://trollos.net/">
+    <meta property="og:title" content="TrollOS - You've Been Invited!">
+    <meta property="og:description" content="Your friends sent you this totally legitimate website... 😈">
+    <meta property="og:site_name" content="TrollOS">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://trollos.net/">
+    <meta property="twitter:title" content="TrollOS - Advanced Trolling Platform">
+    <meta property="twitter:description" content="Click here for a totally normal web experience! 😈">
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff6b6b">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="TrollOS">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==">
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="js/TrollEngine.js" as="script">
+    <link rel="preload" href="styles.css" as="style">
+    
+    <!-- Security Headers (Fake ones for trolling) -->
+    <meta http-equiv="X-Troll-Protection" content="maximum">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:;">
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/x-icon" href="data:image/x-icon;,">
+    
+    <!-- Fake Analytics (Educational) -->
+    <script>
+        // Fake Google Analytics for demonstration
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'TROLL-ANALYTICS-ID', {
+            'custom_map': {'custom_parameter_1': 'troll_level'}
+        });
+        console.log('📊 Fake Analytics: Tracking your trolling experience!');
+    </script>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -20,11 +72,12 @@
         <header>
             <h1 id="title">Welcome to the Best Website Ever! 🎉</h1>
             <p>Click the button below to get started!</p>
+            <button id="sound-toggle" class="sound-toggle" onclick="toggleSound()" title="Toggle Sound">🔊</button>
         </header>
 
         <main>
             <!-- Moving Button Section -->
-            <section class="troll-section">
+            <section class="troll-section moving-button-section">
                 <h2>Get Your Free Prize!</h2>
                 <button id="moving-button" class="troll-button">Click Me for Free Money! 💰</button>
                 <p id="button-message" class="hidden">Haha! Try again! 😜</p>
@@ -127,6 +180,26 @@
                 <button id="decode-button">Decode Secret Message</button>
             </section>
 
+            <!-- Brainless Question -->
+            <section class="troll-section">
+                <h2>🧠 Quick Question</h2>
+                <p>Are you brainless?</p>
+                <div class="brainless-container-custom">
+                    <button id="brainless-yes" class="brainless-btn-custom brainless-yes-custom">✓ Yes</button>
+                    <button id="brainless-no" class="brainless-btn-custom brainless-no-custom">
+                        <span class="no-text">✗ No</span>
+                        <span class="yes-text">✓ Actually... Yes!</span>
+                    </button>
+                </div>
+                <div id="brainless-popup" class="fake-alert hidden">
+                    <div class="alert-content">
+                        <h2>😏 I Knew It!</h2>
+                        <p>Thanks for being honest! 😈</p>
+                        <button id="close-brainless">Close</button>
+                    </div>
+                </div>
+            </section>
+
             <!-- Fake AI Chatbox -->
             <section class="troll-section">
                 <h2>🤖 AI Assistant (Beta)</h2>
@@ -191,6 +264,77 @@
                 </form>
             </section>
 
+            <!-- Trolling Games Section -->
+            <section class="troll-section">
+                <h2>🎮 Mini Games (Totally Fair!)</h2>
+                <div class="games-container">
+                    <div class="game-card" onclick="showGame('catch-button')">
+                        <h3>🎯 Catch the Button</h3>
+                        <p>Click the moving target 10 times to win!</p>
+                    </div>
+                    <div class="game-card" onclick="showGame('memory-game')">
+                        <h3>🧠 Memory Game</h3>
+                        <p>Remember the sequence... if you can!</p>
+                    </div>
+                    <div class="game-card" onclick="showGame('typing-test')">
+                        <h3>⌨️ Typing Test</h3>
+                        <p>Type the words as fast as you can!</p>
+                    </div>
+                    <div class="game-card" onclick="showGame('reaction-time')">
+                        <h3>⚡ Reaction Time</h3>
+                        <p>Test your lightning reflexes!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Game Modals -->
+            <div id="game-modal" class="game-modal hidden">
+                <div class="game-content">
+                    <button id="close-game" class="close-game-btn">✖</button>
+                    
+                    <!-- Catch the Button Game -->
+                    <div id="catch-button-game" class="game-screen hidden">
+                        <h2>🎯 Catch the Button</h2>
+                        <p>Score: <span id="catch-score">0</span>/10</p>
+                        <div class="catch-game-area">
+                            <button id="catch-target" class="catch-target">Click Me!</button>
+                        </div>
+                        <p id="catch-message">Click the button 10 times to win!</p>
+                    </div>
+
+                    <!-- Memory Game -->
+                    <div id="memory-game-screen" class="game-screen hidden">
+                        <h2>🧠 Memory Game</h2>
+                        <p>Level: <span id="memory-level">1</span></p>
+                        <div id="memory-grid" class="memory-grid">
+                            <!-- Grid will be generated by JS -->
+                        </div>
+                        <p id="memory-message">Watch the sequence and repeat it!</p>
+                    </div>
+
+                    <!-- Typing Test -->
+                    <div id="typing-test-screen" class="game-screen hidden">
+                        <h2>⌨️ Typing Test</h2>
+                        <p>Score: <span id="typing-score">0</span>/5</p>
+                        <div class="typing-area">
+                            <div id="typing-target-word" class="typing-target">hello</div>
+                            <input type="text" id="typing-input" placeholder="Type the word above">
+                        </div>
+                        <p id="typing-message">Type 5 words correctly to win!</p>
+                    </div>
+
+                    <!-- Reaction Time Game -->
+                    <div id="reaction-time-screen" class="game-screen hidden">
+                        <h2>⚡ Reaction Time Test</h2>
+                        <div id="reaction-area" class="reaction-area">
+                            <div id="reaction-circle" class="reaction-circle">Wait for GREEN...</div>
+                        </div>
+                        <p id="reaction-message">Click when the circle turns GREEN!</p>
+                        <p>Best Time: <span id="best-time">---</span>ms</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Footer -->
             <footer>
                 <p>You've been successfully trolled! 🎭</p>
@@ -200,6 +344,182 @@
         </main>
     </div>
 
+    <!-- Advanced Troll System Scripts -->
+    <script src="js/TrollEngine.js"></script>
+    <script src="js/TrollFeatures.js"></script>
+    <script src="js/AdvancedTrollFeatures.js"></script>
+    <script src="js/CompleteTrollFeatures.js"></script>
+    
+    <!-- Legacy Script (Being Modernized) -->
     <script src="script.js"></script>
+    
+    <!-- Initialize Advanced Troll System -->
+    <script>
+        // Initialize the advanced troll engine when page loads
+        let trollEngine;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎭 Initializing Advanced Troll System...');
+            
+            // Wait a bit for all legacy code to load
+            setTimeout(() => {
+                try {
+                    trollEngine = new TrollEngine();
+                    console.log('🚀 Advanced Troll System Online!');
+                    
+                    // Add settings button after engine is ready
+                    if (!trollEngine.getFeature('settingsPanel')) {
+                        trollEngine.registerFeature('settingsPanel', new SettingsPanelTroll(trollEngine));
+                    }
+                    
+                } catch (error) {
+                    console.error('Troll Engine Failed to Initialize:', error);
+                    // Fallback to basic trolling if advanced system fails
+                    console.log('🤡 Falling back to basic troll mode');
+                }
+            }, 1000);
+        });
+        
+        // Expose troll engine for debugging (if dev mode is unlocked)
+        window.getTrollEngine = () => {
+            if (trollEngine && trollEngine.isDebugMode()) {
+                return trollEngine;
+            }
+            console.log('🔒 Access denied. Unlock dev mode first!');
+            return null;
+        };
+        
+        // PWA Installation Handler
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('📱 PWA Install prompt available');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show custom install banner after user gets trolled a bit
+            setTimeout(() => {
+                showPWAInstallBanner();
+            }, 30000);
+        });
+        
+        function showPWAInstallBanner() {
+            const banner = document.createElement('div');
+            banner.className = 'pwa-install-banner';
+            banner.innerHTML = `
+                <h4>📱 Install TrollOS App!</h4>
+                <p>Get the full trolling experience with our PWA! Works offline too! 😈</p>
+                <button id="pwa-install-yes">Install App</button>
+                <button id="pwa-install-no">No Thanks</button>
+                <button id="pwa-install-close">×</button>
+            `;
+            
+            document.body.appendChild(banner);
+            
+            // Install button
+            banner.querySelector('#pwa-install-yes').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        console.log('📱 PWA Installation accepted');
+                        trollEngine?.showNotification('Welcome to TrollOS App! 📱', 'update');
+                    } else {
+                        console.log('📱 PWA Installation declined');
+                        trollEngine?.showNotification('App rejected! We\'ll ask again later! 😈', 'virus');
+                    }
+                    
+                    deferredPrompt = null;
+                }
+                banner.remove();
+            });
+            
+            // No thanks button (troll response)
+            banner.querySelector('#pwa-install-no').addEventListener('click', () => {
+                trollEngine?.showNotification('Too bad! We\'ll ask again in 30 seconds! 🔄', 'virus');
+                banner.remove();
+                
+                setTimeout(() => {
+                    if (!document.querySelector('.pwa-install-banner')) {
+                        showPWAInstallBanner();
+                    }
+                }, 30000);
+            });
+            
+            // Close button
+            banner.querySelector('#pwa-install-close').addEventListener('click', () => {
+                banner.remove();
+            });
+        }
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    console.log('🤖 Service Worker registered successfully:', registration.scope);
+                    
+                    // Handle service worker updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // New version available
+                                console.log('🔄 New TrollOS version available!');
+                                
+                                if (trollEngine) {
+                                    trollEngine.showNotification('New TrollOS update available! Refresh to get more trolling features! 🔄', 'update');
+                                }
+                            }
+                        });
+                    });
+                    
+                    // Message channel for service worker communication
+                    navigator.serviceWorker.addEventListener('message', (event) => {
+                        console.log('💬 Message from Service Worker:', event.data);
+                        
+                        if (event.data && event.data.type === 'TROLL_NOTIFICATION') {
+                            trollEngine?.showNotification(event.data.message, 'virus');
+                        }
+                    });
+                    
+                } catch (error) {
+                    console.log('❌ Service Worker registration failed:', error);
+                }
+            });
+        }
+        
+        // Push Notifications (Fake subscription for demo)
+        async function subscribeToPushNotifications() {
+            if ('Notification' in window && 'serviceWorker' in navigator) {
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    console.log('🔔 Push notifications enabled');
+                    trollEngine?.showNotification('Push notifications enabled! Prepare for surprise trolling! 📲', 'update');
+                    
+                    // Fake subscription (no real server)
+                    setTimeout(() => {
+                        new Notification('TrollOS Test Notification! 🎭', {
+                            body: 'This is just a test... or is it? 😈',
+                            tag: 'troll-test'
+                        });
+                    }, 5000);
+                } else {
+                    console.log('🔔 Push notifications denied');
+                    trollEngine?.showNotification('Notifications blocked! We\'ll find other ways to annoy you! 😈', 'virus');
+                }
+            }
+        }
+        
+        // Auto-request notifications after user interaction
+        document.addEventListener('click', () => {
+            if (Math.random() < 0.1 && trollEngine?.getTrollLevel() > 20) {
+                subscribeToPushNotifications();
+            }
+        }, { once: true });
+    </script>
 </body>
 </html>
