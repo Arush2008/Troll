@@ -230,4 +230,3 @@ self.addEventListener('message', event => {
     }
 });
 
-console.log('🎭 TrollOS Service Worker: Loaded and ready for maximum trolling!');
